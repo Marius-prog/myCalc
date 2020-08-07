@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css"/>
+
+    <style>
+      .alert {
+        background: green;
+        padding: 1rem;
+        border-radius: 5px;
+        color: white;
+        margin: 1rem;
+      }
+    </style>
+</head>
+
+<!--<body>-->
+
+<body>
+<div class="container">
+    <h3>Calculator App</h3>
+</div>
+
+<!-- Forms -->
+<div class="container">
+
+    <form action="/first" method="POST">
+        <label for="number one">First Number</label>
+        <input type="number" placeholder="First Number"
+               step="any"
+               class="u-full-width"
+               name="number"/>
+    </form>
+</div>
+
+<div class="container">
+    <form action="/second" method="POST">
+        <label for="number two">Second Number</label>
+        <input type="number" placeholder="Second Number"
+               step="any"
+               class="u-full-width"
+               name="number"/>
+    </form>
+</div>
+
+<div class="container">
+    <form action="/first" method="POST">
+        <label for="operation">Operation</label>
+        <select class="u-full-width" name="operation">
+            <option value="add">Add</option>
+            <option value="subtract">Subtract</option>
+            <option value="multiply">Multiply</option>
+            <option value="divide">Divide</option>
+        </select>
+    </form>
+</div>
+
+<div class="container">
+    <form action="/calculate" method="GET">
+        <input type="submit" value="Calculate" id="calc_btn"/>
+    </form>
+</div>
+
+<br/>
+
+<div class="alert">
+    {% if sum %}
+    answer is: {{ sum }}
+    {% endif %}
+</div>
+
+</body>
+</html>
