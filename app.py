@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 from commands import add, subtract, multiply, divide
@@ -12,16 +10,37 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-class Calculator(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=True)
-    firstNumber = db.Column(db.Float, nullable=True)
-    secondNumber = db.Column(db.Float, nullable=True)
-    operation = db.Column(db.String(50), nullable=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    name = db.Column(db.String(50), nullable=False)
+    calculations = db.relationship("Calculation", backref="owner")
 
-    def __repr__(self):
-        return f"Calculator('{self.name}', '{self.firstNumber}', '{self.secondNumber}', '{self.operation}', '{self.date_created}')"
+
+class Calculation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    firstNumber = db.Column(db.Float, nullable=False)
+    secondNumber = db.Column(db.Float, nullable=False)
+    operation = db.Column(db.String(50), nullable=False)
+    answer = db.Column(db.Integer, nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+
+# class Comments(db.Model):
+# 	id = db.Column(db.Integer, primary_key=True)
+# 	name = db.Column(db.String(20))
+# 	comment = db.Column(db.String(1000))
+
+
+# @app.route('/process', methods=['POST'])
+# def process():
+# 	name = request.form['name']
+# 	comment = request.form['comment']
+#
+# 	signature = Comments(name=name, comment=comment)
+# 	db.session.add(signature)
+# 	db.session.commit()
+
+# return redirect(url_for('index'))
 
 
 @app.route("/")
@@ -29,7 +48,7 @@ def index():
     return render_template("app.html")
 
 
-def save_to_database(record: Calculator) -> str:
+def save_to_database(record: Calculation) -> str:
     try:
         db.session.add(record)
         db.session.commit()
@@ -38,10 +57,11 @@ def save_to_database(record: Calculator) -> str:
         return 'There was an issue adding your task'
 
 
-def update_database(record: Calculator) -> str:
+def update_database(record: Calculation) -> str:
     try:
         # TODO: update
         # db.session.
+        # record = ....
         db.session.add(record)
         db.session.commit()
         return redirect('/')
@@ -49,8 +69,8 @@ def update_database(record: Calculator) -> str:
         return 'There was an issue adding your task'
 
 
-def get_from_database(id: int) -> Calculator:
-    record = Calculator.query.get_or_404(id)
+def get_from_database(id) -> Calculation:
+    record = Calculation.query.get_or_404(id)
     if record is None:
         pass
 
@@ -62,7 +82,8 @@ def post_first_number():
     print("pirmas")
     number = request.form["number"]
     validate_number(number)
-    save_to_database(Calculator(first_number=number))
+    save_to_database(Calculation(first_number=number))
+    return render_template('app.html', number=number)
 
 
 @app.route("/second", methods=["POST"])
@@ -70,18 +91,20 @@ def post_second_number():
     print("antras")
     number = request.form["number"]
     validate_number(number)
-    save_to_database(Calculator(second_number=number))
+    save_to_database(Calculation(second_number=number))
+    return render_template('app.html', number=number)
 
 
 @app.route("/operation", methods=["POST"])
 def post_operation_number():
     print("operation")
     operation = request.form.get["operation"]
-    save_to_database(Calculator(operation=operation))
+    save_to_database(Calculation(operation=operation))
+    return render_template('app.html', operation=operation)
 
 
 @app.route("/calculate")
-def get_result(id: int):
+def get_result(id):
     record = get_from_database(id)
     if record.operation == "add":
         result = add(1, 5)
@@ -91,12 +114,12 @@ def get_result(id: int):
         result = multiply(1, 2)
     else:
         result = divide(1, 2)
-    return result
+    return render_template('app.html', record=record, result=result)
 
 
-@app.errorhandler(404)
-def error(error):
-    return render_template("index.html", error=error), 404
+# @app.errorhandler(404)
+# def error(error):
+#     return render_template("index.html", error=error), 404
 
 
 if __name__ == "__main__":
