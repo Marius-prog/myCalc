@@ -25,9 +25,6 @@ class Calculation(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
-
-
-
 @app.route("/")
 def index():
     return render_template("app.html")
