@@ -25,22 +25,7 @@ class Calculation(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 
-# class Comments(db.Model):
-# 	id = db.Column(db.Integer, primary_key=True)
-# 	name = db.Column(db.String(20))
-# 	comment = db.Column(db.String(1000))
 
-
-# @app.route('/process', methods=['POST'])
-# def process():
-# 	name = request.form['name']
-# 	comment = request.form['comment']
-#
-# 	signature = Comments(name=name, comment=comment)
-# 	db.session.add(signature)
-# 	db.session.commit()
-
-# return redirect(url_for('index'))
 
 
 @app.route("/")
